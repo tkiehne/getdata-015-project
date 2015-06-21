@@ -8,8 +8,8 @@ HARMerge <- function() {
   feat <- read.table("UCI HAR Dataset/features.txt", sep=" ", stringsAsFactors = F)
   activities <- read.table("UCI HAR Dataset/activity_labels.txt", sep=" ", stringsAsFactors = F)
   
-  # normalize column names; replace function brackets () with underscores _
-  test_col_names <- make.names(gsub("\\(\\)", "_", feat$V2))
+  # normalize column names; replace function brackets () with underscores _; remove repeated "Body"
+  test_col_names <- make.names(gsub("BodyBody", "Body", gsub("\\(\\)", "_", feat$V2)))
   
   # Step 4 - Appropriately labels the data set with descriptive variable names. as part of the load
   subj <- do.call("rbind", lapply(c("UCI HAR Dataset/test/subject_test.txt", "UCI HAR Dataset/train/subject_train.txt"), function(fn) read.table(fn, col.names = c("Subject"))))
@@ -17,7 +17,7 @@ HARMerge <- function() {
   test <- do.call("rbind", lapply(c("UCI HAR Dataset/test/X_test.txt", "UCI HAR Dataset/train/X_train.txt"), function(fn) read.table(fn, col.names = test_col_names)))
               
   # Step 2 - Extracts only the measurements on the mean and standard deviation for each measurement. 
-  test <- select(test, matches(".*\\.mean_\\..*|.*\\.std_\\..*", ignore.case = F))
+  test <- select(test, matches(".*\\.mean_.*|.*\\.std_.*", ignore.case = F))
   
   # Step 1 - Merges the training and the test sets to create one data set.
   merged <- cbind(subj, act, test)
